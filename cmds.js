@@ -129,17 +129,16 @@ exports.testCmd = (rl, id) =>{
             rl.question(colorize ('¿' +quiz.question+'?' , 'red'), respuesta => {
 
                if( respuesta.toLowerCase().trim() === quiz.answer.toLowerCase()){
-                   log(`Su respuesta es correcta.`);
+                   log(`Su respuesta es:`);
                    biglog('Correcta','green' );
                    rl.prompt;
                }else {
-                   log(`Su respuesta es incorrecta.`);
+                   log(`Su respuesta es:`);
                    biglog ('Incorrecta','red');
                    rl.prompt;
                }
 
             });
-
         }catch (error) {
             errorlog(error.message);
             rl.prompt();
@@ -152,9 +151,48 @@ exports.testCmd = (rl, id) =>{
  * Jugamos.
  */
 exports.playCmd = rl  =>{
-    log("Jugar.",'red');
-    rl.prompt();
+    let score =0;
+    let toBeResolve= [];
+    let copy =[];
+    copy =model.getAll();
+    for (i=0; i<model.count(); i++){
+        toBeResolve[i]=i;
+    }
 
+    const play = () =>{
+        if(toBeResolve.length === 0){
+            log('No hay nada mas que preguntar.')
+            log('Fin del juego. Aciertos: ' + score);
+            biglog( score , 'magenta');
+            rl.prompt();
+
+        } else {
+            try {
+                let id =Math.floor(Math.random()*model.count());
+                if(id> copy.length-1){
+                    play();
+                }
+                toBeResolve.splice(id,1);
+                rl.question(colorize ('¿' +copy[id].question+'?' , 'red'), respuesta => {
+                    if( respuesta.toLowerCase().trim() === copy[id].answer.toLowerCase().trim()){
+                        score++;
+                        copy.splice(id,1);
+                        log('Correcta - Lleva ' + score + ' aciertos');
+                        play();
+                    }else {
+                        log('Incorrecta');
+                        log('Fin del juego - Aciertos: ' + score);
+                        biglog( score , 'magenta');
+                        rl.prompt;
+                    }
+
+                });
+
+            }catch (error){}
+        }
+    };
+
+    play();
 };
 
 /**
