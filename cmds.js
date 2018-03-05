@@ -120,79 +120,87 @@ exports.editCmd = (rl ,id) =>{
  * @param id Clave del quiz a probar
  */
 exports.testCmd = (rl, id) =>{
-    if(typeof  id === "undefined"){
+    if(typeof id === "undefined"){
         errorlog(`Falta el parámetro id.`);
         rl.prompt();
-    }else{
+    }
+    else{
         try{
-            const quiz = model.getByIndex(id);
-            rl.question(colorize ('¿' +quiz.question+'?' , 'red'), respuesta => {
 
-               if( respuesta.toLowerCase().trim() === quiz.answer.toLowerCase()){
-                   log(`Su respuesta es correcta.`);
-                   log('Correcta','green' );
-                   rl.prompt;
-               }else {
-                   log(`Su respuesta es incorrecta.`);
-                   log ('Incorrecta','red');
-                   rl.prompt;
-               }
-
+            const quiz = "¿" + (model.getByIndex(id)).question + "?: ";
+            rl.question(colorize(quiz, 'red'),respuesta=>{
+                if(respuesta.trim().toLowerCase() === model.getByIndex(id).answer.toLowerCase()){
+                    log(`Su respuesta es correcta. `);
+                    biglog('Correcta', 'green');
+                    rl.prompt();
+                }
+                else{
+                    log(`Su respuesta es incorrecta. `);
+                    biglog('Incorrecta', 'red');
+                    rl.prompt();
+                }
             });
-        }catch (error) {
+
+
+        }catch(error){
             errorlog(error.message);
             rl.prompt();
         }
     }
+
+
 };
 
-
-/**
- * Jugamos.
- */
-exports.playCmd = rl  =>{
-    let score =0;
-    let toBeResolve= [];
-    let copy =[];
-    copy =model.getAll();
-    for (i=0; i<model.count(); i++){
-        toBeResolve[i]=i;
+exports.playCmd = rl =>{
+    let score = 0; //preguntas que se han ido acertando
+    let preguntas = [];
+    let copy = []
+    copy = model.getAll();
+    for(x=0; x < model.count(); x++){
+        preguntas[x] =  x;
     }
 
+
     const play = () =>{
-        if(toBeResolve.length === 0){
-            log('No hay nada mas que preguntar.')
-            log('Fin del juego. Aciertos: ' + score);
+        if( preguntas.length === 0){
+            log(`No hay nada más que preguntar.`);
+            log(`Fin del juego. Aciertos: ` + score);
             biglog( score , 'magenta');
             rl.prompt();
+        }
 
-        } else {
-            try {
-                let id =Math.floor(Math.random()*model.count());
-                if(id> copy.length-1){
+
+        else{
+            try{
+                let id = Math.floor(Math.random()*model.count());
+                if(id > copy.length-1){
                     play();
                 }
-                toBeResolve.splice(id,1);
-                rl.question(colorize ('¿' +copy[id].question+'?' , 'red'), respuesta => {
-                    if( respuesta.toLowerCase().trim() === copy[id].answer.toLowerCase().trim()){
-                        score++;
+                preguntas.splice(id,1);
+                let quiz = "¿" + copy[id].question + "?: ";
+                rl.question(colorize(quiz, 'red'),answer=>{
+                    if(answer.trim().toLowerCase() === copy[id].answer.toLowerCase()){
+                        score = score + 1;
                         copy.splice(id,1);
-                        log(' Correcto - Lleva ' + score + ' aciertos');
+                        log(`CORRECTO - Lleva ` + score + ` aciertos.`);
                         play();
-                    }else {
-                        log(' Incorrecto');
-                        log(' Fin del juego - Aciertos: ' + score);
-                        biglog( score , 'magenta');
-                        rl.prompt;
                     }
-
+                    else{
+                        log(`INCORRECTO.`);
+                        log(`Fin del juego. Aciertos: ` + score);
+                        biglog( score , 'magenta');
+                        rl.prompt();
+                    }
                 });
 
-            }catch (error){}
+
+            }
+            catch(error){}
         }
     };
 
     play();
+
 };
 
 /**
