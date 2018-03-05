@@ -129,12 +129,12 @@ exports.testCmd = (rl, id) =>{
             rl.question(colorize ('¿' +quiz.question+'?' , 'red'), respuesta => {
 
                if( respuesta.toLowerCase().trim() === quiz.answer.toLowerCase()){
-                   log(`Su respuesta es:`);
-                   biglog('Correcta','green' );
+                   log(`Su respuesta es correcta.`);
+                   log('Correcta','green' );
                    rl.prompt;
                }else {
-                   log(`Su respuesta es:`);
-                   biglog ('Incorrecta','red');
+                   log(`Su respuesta es incorrecta.`);
+                   log ('Incorrecta','red');
                    rl.prompt;
                }
 
@@ -177,11 +177,11 @@ exports.playCmd = rl  =>{
                     if( respuesta.toLowerCase().trim() === copy[id].answer.toLowerCase().trim()){
                         score++;
                         copy.splice(id,1);
-                        log('Correcta - Lleva ' + score + ' aciertos');
+                        log(' Correcto - Lleva ' + score + ' aciertos');
                         play();
                     }else {
-                        log('Incorrecta');
-                        log('Fin del juego - Aciertos: ' + score);
+                        log(' Incorrecto');
+                        log(' Fin del juego - Aciertos: ' + score);
                         biglog( score , 'magenta');
                         rl.prompt;
                     }
